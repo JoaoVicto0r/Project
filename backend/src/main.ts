@@ -18,7 +18,7 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
   const logger = new Logger('Bootstrap');
   app.useLogger(logger);
-d
+
   // ===== Configurações de Segurança =====
   app.use(helmet());
   app.use(cookieParser(configService.get('COOKIE_SECRET')));
@@ -38,6 +38,7 @@ d
     'http://localhost:3001',
     'http://192.168.56.1:3000',
     'https://price-lyart-kappa.vercel.app',
+    'https://project-psi-seven-46.vercel.app,'
     'https://api-sable-omega.vercel.app',
   ];
 
