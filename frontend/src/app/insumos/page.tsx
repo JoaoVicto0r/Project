@@ -216,7 +216,7 @@ export default function InsumosPage() {
               placeholder="Buscar insumos..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-full pl-10 pr-4 py-2 border text-neutral-800 border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             />
           </div>
           <button className="border border-neutral-300 text-neutral-600 hover:bg-neutral-50 px-4 py-2 rounded-lg tracking-wider flex items-center gap-2">
