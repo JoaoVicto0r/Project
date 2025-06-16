@@ -38,7 +38,7 @@ async function bootstrap() {
     'http://localhost:3001',
     'http://192.168.56.1:3000',
     'https://price-lyart-kappa.vercel.app',
-    'https://project-psi-seven-46.vercel.app,'
+    'https://project-psi-seven-46.vercel.app',
     'https://api-sable-omega.vercel.app',
   ];
 
