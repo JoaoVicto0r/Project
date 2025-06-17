@@ -30,7 +30,7 @@ export function InsumoForm({
   categories = [],
   suppliers = [],
 }: InsumoFormProps) {
-  const [formData, setFormData] = useState<Partial<Ingredient>>({
+  const [formData, setFormData] = useState<Partial<Ingredient> & { categoryId: number | ""; supplierId?: string }>({
     name: "",
     description: "",
     unit: "un",
@@ -51,26 +51,15 @@ export function InsumoForm({
     isWeightBased: false,
   })
 
-  // Calcular valores baseados na unidade
   useEffect(() => {
     const selectedUnit = units.find((u) => u.value === formData.unit)
     const isWeightBased = selectedUnit?.isWeight || false
     const stock = formData.stock || 0
     const unitCost = formData.unitCost || 0
 
-    let totalValue = 0
-    let pricePerKg = 0
-    let pricePerUnit = 0
-
-    if (isWeightBased) {
-      totalValue = stock * unitCost
-      pricePerKg = unitCost
-      pricePerUnit = unitCost
-    } else {
-      totalValue = stock * unitCost
-      pricePerUnit = unitCost
-      pricePerKg = unitCost
-    }
+    let totalValue = stock * unitCost
+    let pricePerKg = unitCost
+    let pricePerUnit = unitCost
 
     setCalculations({
       totalValue,
@@ -104,15 +93,22 @@ export function InsumoForm({
       return
     }
 
-    
-  // Limpar campos opcionais vazios
-  const dataToSend = { ...formData };
-  if (!dataToSend.supplierId) delete dataToSend.supplierId;
-  if (!dataToSend.description) delete dataToSend.description;
-  // Faça o mesmo para outros campos opcionais se necessár
+    // Limpar campos opcionais vazios e garantir tipos corretos
+    const dataToSend: any = { ...formData }
+
+    // categoryId: garantir que é number
+    if (dataToSend.categoryId === "" || isNaN(Number(dataToSend.categoryId))) {
+      setError("Categoria é obrigatória")
+      return
+    }
+    dataToSend.categoryId = Number(dataToSend.categoryId)
+
+    // supplierId: remover se vazio
+    if (!dataToSend.supplierId) delete dataToSend.supplierId
+    if (!dataToSend.description) delete dataToSend.description
 
     try {
-      await onSubmit(formData as Ingredient)
+      await onSubmit(dataToSend as Ingredient)
     } catch (err) {
       setError(err instanceof Error ? err.message : "Erro ao salvar insumo")
     }
@@ -176,11 +172,12 @@ export function InsumoForm({
             </div>
 
             <div>
-              <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Categoria</label>
+              <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Categoria *</label>
               <select
-                value={formData.categoryId || ""}
-                onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
+                value={formData.categoryId}
+                onChange={(e) => setFormData({ ...formData, categoryId: e.target.value === "" ? "" : Number(e.target.value) })}
                 disabled={loading}
+                required
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
                 <option value="">Selecione uma categoria</option>
@@ -302,7 +299,7 @@ export function InsumoForm({
               <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Fornecedor</label>
               <select
                 value={formData.supplierId || ""}
-                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value || undefined })}
                 disabled={loading}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
