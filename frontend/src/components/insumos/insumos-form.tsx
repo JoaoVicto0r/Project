@@ -104,6 +104,13 @@ export function InsumoForm({
       return
     }
 
+    
+  // Limpar campos opcionais vazios
+  const dataToSend = { ...formData };
+  if (!dataToSend.supplierId) delete dataToSend.supplierId;
+  if (!dataToSend.description) delete dataToSend.description;
+  // Faça o mesmo para outros campos opcionais se necessár
+
     try {
       await onSubmit(formData as Ingredient)
     } catch (err) {
