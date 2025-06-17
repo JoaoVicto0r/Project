@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from "react"
 import { X, Save, Calculator, Package, DollarSign } from "lucide-react"
-import type { Ingredient, Category, Supplier } from "@/lib/api"
+import type { Ingredient, Category, Supplier, CreateIngredientData } from "@/lib/api"
 
 interface InsumoFormProps {
-  onSubmit: (data: Ingredient) => Promise<void>
+  onSubmit: (data: CreateIngredientData) => Promise<void>
   initialData?: Partial<Ingredient>
   loading?: boolean
   onCancel?: () => void
@@ -47,6 +47,14 @@ export function InsumoForm({
   supplierId: initialData?.supplierId || undefined,
   ...initialData,
 });
+
+const [calculations, setCalculations] = useState({
+  totalValue: 0,
+  pricePerKg: 0,
+  pricePerUnit: 0,
+  isWeightBased: false,
+});
+const [error, setError] = useState("");
 
   useEffect(() => {
     const selectedUnit = units.find((u) => u.value === formData.unit)
@@ -108,14 +116,7 @@ if (!dataToSend.supplierId) delete dataToSend.supplierId;
 if (!dataToSend.description) delete dataToSend.description;
 
 await onSubmit(dataToSend as CreateIngredientData);
-
-    try {
-      await onSubmit(dataToSend as Ingredient)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao salvar insumo")
-    }
-  }
-
+}
   const selectedUnit = units.find((u) => u.value === formData.unit)
   const isLowStock = (formData.stock || 0) <= (formData.minStock || 0)
 
