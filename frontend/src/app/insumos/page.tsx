@@ -5,7 +5,7 @@ import { Plus, Search, Filter, MoreHorizontal, TrendingUp, AlertTriangle, Packag
 import { useIngredients } from "@/hooks/use-ingredients"
 import { useAuth } from "@/hooks/use-auth"
 import { InsumoForm } from "@/components/insumos/insumos-form"
-import type { Ingredient } from "@/lib/api"
+import type { CreateIngredientData, Ingredient } from "@/lib/api"
 
 export default function InsumosPage() {
   // Estados do componente
@@ -43,7 +43,7 @@ export default function InsumosPage() {
 )
 
   // Handler para criar insumo
-  const handleCreateInsumo = async (data: Ingredient) => {
+  const handleCreateInsumo = async (data: CreateIngredientData) => {
     setIsSubmitting(true)
     try {
       await createIngredient(data)
@@ -54,7 +54,7 @@ export default function InsumosPage() {
   }
 
   // Handler para atualizar insumo
-  const handleUpdateInsumo = async (data: Ingredient) => {
+  const handleUpdateInsumo = async (data: CreateIngredientData) => {
     if (!editingInsumo) return
 
     setIsSubmitting(true)
