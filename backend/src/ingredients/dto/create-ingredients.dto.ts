@@ -29,7 +29,7 @@ export class CreateIngredientDto {
   @IsDateString()
   expirationDate?: string;
 
-  @IsString()
+  @IsNumber()
   categoryId: number;
   
 
