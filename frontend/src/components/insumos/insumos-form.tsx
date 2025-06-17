@@ -91,18 +91,23 @@ export function InsumoForm({
     }
 
     // Limpar campos opcionais vazios e garantir tipos corretos
-    const dataToSend: any = { ...formData }
+   const dataToSend: any = { ...formData };
 
-    // categoryId: garantir que é number
-    if (dataToSend.categoryId === "" || isNaN(Number(dataToSend.categoryId))) {
-      setError("Categoria é obrigatória")
-      return
-    }
-    dataToSend.categoryId = Number(dataToSend.categoryId)
+// categoryId: garantir que é number
+if (dataToSend.categoryId === "" || isNaN(Number(dataToSend.categoryId))) {
+  setError("Categoria é obrigatória");
+  return;
+}
+dataToSend.categoryId = Number(dataToSend.categoryId);
 
-    // supplierId: remover se vazio
-    if (!dataToSend.supplierId) delete dataToSend.supplierId
-    if (!dataToSend.description) delete dataToSend.description
+// supplierId: garantir que é string ou undefined
+if (dataToSend.supplierId !== undefined && dataToSend.supplierId !== null) {
+  dataToSend.supplierId = String(dataToSend.supplierId);
+}
+if (!dataToSend.supplierId) delete dataToSend.supplierId;
+if (!dataToSend.description) delete dataToSend.description;
+
+await onSubmit(dataToSend as CreateIngredientData);
 
     try {
       await onSubmit(dataToSend as Ingredient)
