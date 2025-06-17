@@ -172,7 +172,7 @@ export function InsumoForm({
               <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Categoria</label>
               <select
                 value={formData.categoryId || ""}
-                onChange={(e) => setFormData({ ...formData, categoryId: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, categoryId: Number(e.target.value) })}
                 disabled={loading}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
