@@ -351,7 +351,7 @@ export interface Ingredient {
   minStock: number
   expirationDate?: string
   isActive: boolean
-  categoryId?: string
+  categoryId?: number
   supplierId?: string
   category?: Category
   supplier?: Supplier
