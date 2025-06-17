@@ -30,18 +30,29 @@ export function InsumoForm({
   categories = [],
   suppliers = [],
 }: InsumoFormProps) {
-  const [formData, setFormData] = useState<Partial<Ingredient> & { categoryId: number | ""; supplierId?: string }>({
-    name: "",
-    description: "",
-    unit: "un",
-    unitCost: 0,
-    stock: 0,
-    minStock: 0,
-    isActive: true,
-    categoryId: "",
-    supplierId: "",
-    ...initialData,
-  })
+  const [formData, setFormData] = useState<
+  Partial<Ingredient> & { categoryId: number | "" | string; supplierId?: string }
+>({
+  name: "",
+  description: "",
+  unit: "un",
+  unitCost: 0,
+  stock: 0,
+  minStock: 0,
+  isActive: true,
+  categoryId: "",
+  supplierId: undefined,
+  ...initialData,
+  // Garante que categoryId nunca será string vazia se vier do initialData
+  categoryId:
+    initialData?.categoryId !== undefined && initialData?.categoryId !== null
+      ? Number(initialData.categoryId)
+      : "",
+  supplierId:
+    initialData?.supplierId !== undefined && initialData?.supplierId !== null && initialData?.supplierId !== ""
+      ? String(initialData.supplierId)
+      : undefined,
+})
 
   const [error, setError] = useState("")
   const [calculations, setCalculations] = useState({
