@@ -31,7 +31,7 @@ export function InsumoForm({
   suppliers = [],
 }: InsumoFormProps) {
   const [formData, setFormData] = useState<
-  Partial<Ingredient> & { categoryId: number | "" | string; supplierId?: string }
+  Partial<Ingredient> & { categoryId?: number; supplierId?: string }
 >({
   name: "",
   description: "",
@@ -40,19 +40,12 @@ export function InsumoForm({
   stock: 0,
   minStock: 0,
   isActive: true,
-  categoryId: "",
-  supplierId: undefined,
+  categoryId: initialData?.categoryId !== undefined && initialData?.categoryId !== null
+    ? Number(initialData.categoryId)
+    : undefined,
+  supplierId: initialData?.supplierId || undefined,
   ...initialData,
-  // Garante que categoryId nunca será string vazia se vier do initialData
-  categoryId:
-    initialData?.categoryId !== undefined && initialData?.categoryId !== null
-      ? Number(initialData.categoryId)
-      : "",
-  supplierId:
-    initialData?.supplierId !== undefined && initialData?.supplierId !== null && initialData?.supplierId !== ""
-      ? String(initialData.supplierId)
-      : undefined,
-})
+});
 
   const [error, setError] = useState("")
   const [calculations, setCalculations] = useState({
@@ -185,11 +178,14 @@ export function InsumoForm({
             <div>
               <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Categoria *</label>
               <select
-                value={formData.categoryId}
-                onChange={(e) => setFormData({ ...formData, categoryId: e.target.value === "" ? "" : Number(e.target.value) })}
-                disabled={loading}
-                required
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                value={formData.categoryId ?? ""}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    categoryId: e.target.value === "" ? undefined : Number(e.target.value),
+                  })
+                }
+                // ...
               >
                 <option value="">Selecione uma categoria</option>
                 {categories.map((category) => (
