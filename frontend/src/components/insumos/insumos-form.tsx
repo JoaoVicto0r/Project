@@ -170,7 +170,7 @@ await onSubmit(dataToSend as CreateIngredientData);
                 required
                 disabled={loading}
                 placeholder="Ex: Farinha de Trigo Especial"
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               />
             </div>
 
@@ -184,7 +184,9 @@ await onSubmit(dataToSend as CreateIngredientData);
                     categoryId: e.target.value === "" ? undefined : Number(e.target.value),
                   })
                 }
-                // ...
+                required
+                disabled={loading}
+                className="w-full px-4 py-3 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
                 <option value="">Selecione uma categoria</option>
                 {categories.map((category) => (
