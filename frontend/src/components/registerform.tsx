@@ -10,7 +10,7 @@ export default function Register() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const res = await fetch('https://project-psi-seven-46.vercel.app/api/auth/register', {
+    const res = await fetch('https://project-bria.onrender.com/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: "include",
