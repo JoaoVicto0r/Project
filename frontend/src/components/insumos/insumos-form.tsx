@@ -40,20 +40,13 @@ export function InsumoForm({
   stock: 0,
   minStock: 0,
   isActive: true,
-  categoryId: initialData?.categoryId !== undefined && initialData?.categoryId !== null
-    ? Number(initialData.categoryId)
-    : undefined,
+  categoryId:
+    initialData?.categoryId !== undefined && initialData?.categoryId !== null
+      ? Number(initialData.categoryId)
+      : undefined,
   supplierId: initialData?.supplierId || undefined,
   ...initialData,
 });
-
-  const [error, setError] = useState("")
-  const [calculations, setCalculations] = useState({
-    totalValue: 0,
-    pricePerKg: 0,
-    pricePerUnit: 0,
-    isWeightBased: false,
-  })
 
   useEffect(() => {
     const selectedUnit = units.find((u) => u.value === formData.unit)
