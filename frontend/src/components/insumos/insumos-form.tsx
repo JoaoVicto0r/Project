@@ -304,13 +304,14 @@ await onSubmit(dataToSend as CreateIngredientData);
               <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Fornecedor</label>
               <select
                 value={formData.supplierId || ""}
-                onChange={(e) => setFormData({ ...formData, supplierId: e.target.value || undefined })}
-                disabled={loading}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                onChange={(e) =>
+                  setFormData({ ...formData, supplierId: e.target.value || undefined })
+                }
+                // ...
               >
                 <option value="">Selecione um fornecedor</option>
                 {suppliers.map((supplier) => (
-                  <option key={supplier.id} value={supplier.id}>
+                  <option key={supplier.id} value={String(supplier.id)}>
                     {supplier.name}
                   </option>
                 ))}

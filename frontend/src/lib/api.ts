@@ -352,7 +352,7 @@ export interface Ingredient {
   expirationDate?: string
   isActive: boolean
   categoryId?: string
-  supplierId?: number
+  supplierId?: string
   category?: Category
   supplier?: Supplier
   recipeIngredients?: RecipeIngredient[]
