@@ -415,7 +415,7 @@ export interface CreateIngredientData {
   stock: number
   minStock: number
   expirationDate?: string
-  categoryId?: string
+  categoryId?: number
   supplierId?: string
 }
 
