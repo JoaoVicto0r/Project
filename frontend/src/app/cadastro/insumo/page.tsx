@@ -15,7 +15,6 @@ export default function CadastroInsumoPage() {
     setError("");
     setSuccess("");
     try {
-     
       setSuccess("Insumo cadastrado com sucesso!");
     } catch (err: any) {
       setError("Erro ao cadastrar insumo");
@@ -25,13 +24,13 @@ export default function CadastroInsumoPage() {
   }
 
   return (
-    <div className="w-full min-h-screen bg-indigo-500/50">
-      <div className="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-lg mt-8">
+    <div className="w-full min-h-screen bg-indigo-500/50 flex items-center justify-center py-8">
+      <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg">
         {/* Faixa superior igual à página de insumos */}
-        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 rounded-t-xl">
-          <h2 className="text-xl font-extrabold text-white tracking-wider">Novo Insumo</h2>
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-8 py-5 rounded-t-xl">
+          <h2 className="text-2xl font-extrabold text-white tracking-wider">Novo Insumo</h2>
         </div>
-        <div className="p-6">
+        <div className="p-8 md:p-10">
           {success && <div className="mb-4 text-green-600 font-bold text-center">{success}</div>}
           {error && <div className="mb-4 text-red-600 font-bold text-center">{error}</div>}
           <InsumoForm
