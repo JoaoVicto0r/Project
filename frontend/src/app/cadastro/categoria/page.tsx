@@ -2,6 +2,7 @@
 
 import { Tag, Plus, Search, Edit, Trash2, Package, ChefHat } from "lucide-react"
 import Link from "next/link"
+import CategoriaForm from "@/components/categoria/categoria-form"
 
 export default function CategoriaPage() {
   const categorias = [
