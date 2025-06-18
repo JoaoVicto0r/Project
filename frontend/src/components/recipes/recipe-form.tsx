@@ -94,7 +94,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
               required
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             />
           </div>
 
@@ -106,7 +106,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
               value={formData.servings}
               onChange={(e) => setFormData((prev) => ({ ...prev, servings: Number(e.target.value) }))}
               required
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             />
           </div>
 
@@ -117,7 +117,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
               min="0"
               value={formData.preparationTime || ""}
               onChange={(e) => setFormData((prev) => ({ ...prev, preparationTime: Number(e.target.value) }))}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             />
           </div>
 
@@ -126,7 +126,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
             <select
               value={formData.difficulty}
               onChange={(e) => setFormData((prev) => ({ ...prev, difficulty: e.target.value }))}
-              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             >
               <option value="EASY">Fácil</option>
               <option value="MEDIUM">Médio</option>
@@ -141,7 +141,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
             value={formData.description}
             onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
             rows={3}
-            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+            className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
           />
         </div>
 
@@ -151,7 +151,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
             value={formData.instructions}
             onChange={(e) => setFormData((prev) => ({ ...prev, instructions: e.target.value }))}
             rows={5}
-            className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+            className="w-full px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
           />
         </div>
 
@@ -162,7 +162,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
             <select
               value={selectedIngredient}
               onChange={(e) => setSelectedIngredient(e.target.value)}
-              className="flex-1 px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="flex-1 px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             >
               <option value="">Selecione um ingrediente</option>
               {ingredients.map((ingredient) => (
@@ -177,7 +177,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
               placeholder="Quantidade"
               value={ingredientQuantity || ""}
               onChange={(e) => setIngredientQuantity(Number(e.target.value))}
-              className="w-32 px-3 py-2 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
+              className="w-32 px-3 py-2 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:outline-none tracking-wider"
             />
 
             <button
