@@ -1,0 +1,48 @@
+"use client";
+
+"use client";
+
+import { useState } from "react";
+import { InsumoForm } from "@/components/insumos/insumos-form";
+
+// Supondo que você tenha funções para criar insumo, buscar categorias e fornecedores
+// Importe ou implemente conforme sua estrutura real
+// import { createInsumo, getCategorias, getFornecedores } from "@/lib/api";
+
+export default function CadastroInsumoPage() {
+  // Exemplo de estados para categorias e fornecedores
+  const [categorias, setCategorias] = useState([]);
+  const [fornecedores, setFornecedores] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState("");
+  const [error, setError] = useState("");
+
+  // Exemplo de submit handler
+  async function handleSubmit(data: any) {
+    setLoading(true);
+    setError("");
+    setSuccess("");
+    try {
+      // await createInsumo(data);
+      setSuccess("Insumo cadastrado com sucesso!");
+    } catch (err: any) {
+      setError("Erro ao cadastrar insumo");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="max-w-2xl mx-auto mt-10">
+      <h1 className="text-2xl font-extrabold text-indigo-700 mb-6 tracking-wider">Cadastrar Insumo</h1>
+      {success && <div className="mb-4 text-green-600 font-bold">{success}</div>}
+      {error && <div className="mb-4 text-red-600 font-bold">{error}</div>}
+      <InsumoForm
+        onSubmit={handleSubmit}
+        loading={loading}
+        categories={categorias}
+        suppliers={fornecedores}
+      />
+    </div>
+  );
+}
