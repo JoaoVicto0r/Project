@@ -206,7 +206,7 @@ await onSubmit(dataToSend as CreateIngredientData);
               rows={3}
               disabled={loading}
               placeholder="Descrição detalhada do insumo..."
-              className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all resize-none disabled:opacity-50"
+              className="w-full px-4 py-3 border text-neutral-800 border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all resize-none disabled:opacity-50"
             />
           </div>
         </div>
@@ -231,7 +231,7 @@ await onSubmit(dataToSend as CreateIngredientData);
                 onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
                 required
                 disabled={loading}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 border text-neutral-800 border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               />
             </div>
 
@@ -242,7 +242,7 @@ await onSubmit(dataToSend as CreateIngredientData);
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                 required
                 disabled={loading}
-                className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                className="w-full px-4 py-3 border  text-neutral-800 border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
                 <option value="">Selecione uma unidade</option>
                 {units.map((unit) => (
@@ -265,7 +265,7 @@ await onSubmit(dataToSend as CreateIngredientData);
                 onChange={(e) => setFormData({ ...formData, minStock: Number(e.target.value) })}
                 required
                 disabled={loading}
-                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:outline-none tracking-wider transition-all disabled:opacity-50 ${
+                className={`w-full px-4 py-3 border text-neutral-800 rounded-lg focus:ring-2 focus:outline-none tracking-wider transition-all disabled:opacity-50 ${
                   isLowStock
                     ? "border-red-300 focus:border-red-500 focus:ring-red-200"
                     : "border-neutral-300 focus:border-indigo-500 focus:ring-indigo-200"
@@ -298,7 +298,7 @@ await onSubmit(dataToSend as CreateIngredientData);
                   onChange={(e) => setFormData({ ...formData, unitCost: Number(e.target.value) })}
                   required
                   disabled={loading}
-                  className="w-full pl-10 pr-4 py-3 border border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+                  className="w-full pl-10 pr-4 py-3 border text-neutral-800 border-neutral-300 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
                 />
               </div>
             </div>
