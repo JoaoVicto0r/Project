@@ -25,7 +25,7 @@ export default function CadastroInsumoPage() {
 
   return (
     <div className="w-full min-h-screen bg-indigo-500/50 flex justify-center items-center py-8 px-4">
-      <div className="max-w-7xl w-full bg-white rounded-xl shadow-lg mx-auto">
+      
         {/* Faixa superior */}
         
         <div className="p-8">
@@ -38,7 +38,7 @@ export default function CadastroInsumoPage() {
             suppliers={fornecedores}
           />
         </div>
-      </div>
+      
     </div>
   );
 }
