@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChefHat, Package, DollarSign, MessageSquare, LogOut, PlusCircle, ChevronUp, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
+import { InsumoForm } from "@/components/insumos/insumos-form"
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -41,7 +42,7 @@ export default function Sidebar() {
   const cadastroItems = [
     { href: "/cadastro/fornecedor", label: "Fornecedor" },
     { href: "/cadastro/categoria", label: "Categoria" },
-    { href: "/cadastro/insumo", label: "Insumo" },
+    { href: "@/components/insumos/insumos-form.tsx", label: "Insumo" },
     // Adicione mais opções conforme necessário
   ];
 
