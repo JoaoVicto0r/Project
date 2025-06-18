@@ -15,7 +15,7 @@ export default function CadastroInsumoPage() {
     setError("");
     setSuccess("");
     try {
-      // await createInsumo(data);
+     
       setSuccess("Insumo cadastrado com sucesso!");
     } catch (err: any) {
       setError("Erro ao cadastrar insumo");
