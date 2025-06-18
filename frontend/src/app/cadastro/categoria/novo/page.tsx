@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
-import CategoriaForm from "@/components/categoria/categoria-form"
+import { CategoriaForm } from "@/components/categoria/categoria-form"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 
