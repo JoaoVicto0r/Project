@@ -29,15 +29,17 @@ export default function CadastroInsumoPage() {
      </div> <div className="max-w-7xl w-full bg-white rounded-xl shadow-lg mx-auto">
          Faixa superior */}
         
-        <div className="w-full min-h-screen bg-indigo-500/50 flex justify-center items-center py-8 px-4">
+        <div className="p-8">
           {success && <div className="mb-4 text-green-600 font-bold text-center">{success}</div>}
           {error && <div className="mb-4 text-red-600 font-bold text-center">{error}</div>}
-          <InsumoForm
-            onSubmit={handleSubmit}
-            loading={loading}
-            categories={categorias}
-            suppliers={fornecedores}
-          />
+          <div className="max-w-7xl w-full mx-auto">
+    <InsumoForm
+      onSubmit={handleSubmit}
+      loading={loading}
+      categories={categorias}
+      suppliers={fornecedores}
+    />
+  </div>
         </div>
       
     </div>
