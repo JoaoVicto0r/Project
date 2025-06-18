@@ -2,12 +2,14 @@
 
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import { ChefHat, Package, DollarSign, MessageSquare, LogOut } from "lucide-react";
+import { ChefHat, Package, DollarSign, MessageSquare, LogOut, PlusCircle, ChevronUp, ChevronDown } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const [openCadastro, setOpenCadastro] = useState(false);
 
   const navItems = [
     { 
@@ -34,6 +36,13 @@ export default function Sidebar() {
       icon: <MessageSquare className="w-5 h-5" />,
       matchPattern: "/suporte"
     },
+  ];
+
+  const cadastroItems = [
+    { href: "/cadastro/fornecedor", label: "Fornecedor" },
+    { href: "/cadastro/categoria", label: "Categoria" },
+    { href: "/cadastro/insumo", label: "Insumo" },
+    // Adicione mais opções conforme necessário
   ];
 
   const isActive = (path: string, matchPattern?: string) => {
@@ -80,6 +89,36 @@ export default function Sidebar() {
             <span>{item.label}</span>
           </Link>
         ))}
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setOpenCadastro((v) => !v)}
+            className="flex items-center gap-3 w-full text-left p-4 rounded-lg tracking-wider transition-all text-neutral-600 hover:bg-indigo-50"
+          >
+            <PlusCircle className="w-5 h-5" />
+            <span>Cadastro</span>
+            {openCadastro ? <ChevronUp className="w-4 h-4 ml-auto" /> : <ChevronDown className="w-4 h-4 ml-auto" />}
+          </button>
+          {openCadastro && (
+            <ul className="ml-8 mt-1 space-y-1">
+              {cadastroItems.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className={`block px-4 py-2 rounded-lg ${
+                      pathname.startsWith(item.href)
+                        ? "bg-indigo-100 text-indigo-700 font-bold"
+                        : "text-neutral-600 hover:bg-indigo-50"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
         {/* Botão de Logout */}
         <button
