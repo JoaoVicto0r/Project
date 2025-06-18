@@ -25,7 +25,7 @@ export default function CadastroInsumoPage() {
   }
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-neutral-50 py-8">
+    <div className="flex flex-col items-center w-full min-h-screen bg-indigo-500/50 py-8">
       <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg p-8">
         <h1 className="text-2xl font-extrabold text-indigo-700 mb-6 tracking-wider text-center">Cadastrar Insumo</h1>
         {success && <div className="mb-4 text-green-600 font-bold text-center">{success}</div>}
