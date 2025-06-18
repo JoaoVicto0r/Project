@@ -25,17 +25,22 @@ export default function CadastroInsumoPage() {
   }
 
   return (
-    <div className="flex flex-col items-center w-full min-h-screen bg-indigo-500/50 py-8">
-      <div className="w-full max-w-5xl bg-white rounded-xl shadow-lg p-8">
-        <h1 className="text-2xl font-extrabold text-indigo-700 mb-6 tracking-wider text-center">Cadastrar Insumo</h1>
-        {success && <div className="mb-4 text-green-600 font-bold text-center">{success}</div>}
-        {error && <div className="mb-4 text-red-600 font-bold text-center">{error}</div>}
-        <InsumoForm
-          onSubmit={handleSubmit}
-          loading={loading}
-          categories={categorias}
-          suppliers={fornecedores}
-        />
+    <div className="w-full min-h-screen bg-indigo-500/50">
+      <div className="w-full max-w-5xl mx-auto bg-white rounded-xl shadow-lg mt-8">
+        {/* Faixa superior igual à página de insumos */}
+        <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4 rounded-t-xl">
+          <h2 className="text-xl font-extrabold text-white tracking-wider">Novo Insumo</h2>
+        </div>
+        <div className="p-6">
+          {success && <div className="mb-4 text-green-600 font-bold text-center">{success}</div>}
+          {error && <div className="mb-4 text-red-600 font-bold text-center">{error}</div>}
+          <InsumoForm
+            onSubmit={handleSubmit}
+            loading={loading}
+            categories={categorias}
+            suppliers={fornecedores}
+          />
+        </div>
       </div>
     </div>
   );
