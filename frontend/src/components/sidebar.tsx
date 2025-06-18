@@ -14,6 +14,7 @@ export default function Sidebar() {
     { href: "/insumos", label: "Insumos" },
     { href: "/financeiro", label: "Financeiro" },
     { href: "/suporte", label: "Suporte" },
+    { href: "/cadastro", label: "Cadastro" },
   ];
 
   const cadastroItems = [
