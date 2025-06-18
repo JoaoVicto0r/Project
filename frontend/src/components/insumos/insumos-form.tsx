@@ -310,7 +310,8 @@ await onSubmit(dataToSend as CreateIngredientData);
                 onChange={(e) =>
                   setFormData({ ...formData, supplierId: e.target.value || undefined })
                 }
-                // ...
+                disabled={loading}
+                className="w-full px-4 py-3 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
               >
                 <option value="">Selecione um fornecedor</option>
                 {suppliers.map((supplier) => (
