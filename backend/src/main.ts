@@ -58,7 +58,6 @@ async function bootstrap() {
       'Authorization',
       'X-Requested-With',
       'X-CSRF-Token',
-      'Set-Cookie',
     ],
     exposedHeaders: [
       'Authorization',
