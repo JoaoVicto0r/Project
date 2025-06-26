@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { InsumoForm } from "@/components/insumos/insumo-form"
+import { InsumoForm } from "@/components/insumos/insumos-form"
 import { api, type CreateIngredientData, type Category, type Supplier } from "@/lib/api"
 
 export default function NovoInsumoPage() {

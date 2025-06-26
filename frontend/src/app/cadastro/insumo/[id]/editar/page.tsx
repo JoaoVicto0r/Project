@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { use } from "react"
 import { ArrowLeft, Loader } from "lucide-react"
 import Link from "next/link"
-import { InsumoForm } from "@/components/insumos/insumo-form"
+import { InsumoForm } from "@/components/insumos/insumos-form"
 import { api, type CreateIngredientData, type Ingredient, type Category, type Supplier } from "@/lib/api"
 
 export default function EditarInsumoPage({
