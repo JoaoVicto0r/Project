@@ -8,72 +8,72 @@ export interface User {
   // Adicione outros campos que seu usuário possa ter
 }
 
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://price-d26o.onrender.com/api";
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://price-d26o.onrender.com/api"
 
 class ApiClient {
-  private baseURL: string;
-  private timeoutMs = 10000;
+  private baseURL: string
+  private timeoutMs = 10000
 
   constructor(baseURL: string) {
-    this.baseURL = baseURL;
+    this.baseURL = baseURL
   }
 
   // Não é mais necessário setToken/removeToken, pois o token é enviado via cookie
 
   async logout() {
     try {
-      await this.request<{ message: string }>("/auth/logout", { method: "POST" });
+      await this.request<{ message: string }>("/auth/logout", { method: "POST" })
     } catch (error) {
-      console.error("Logout error:", error);
+      console.error("Logout error:", error)
     }
   }
 
   private async request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    const controller = new AbortController()
+    const timeout = setTimeout(() => controller.abort(), this.timeoutMs)
 
-    const headers = new Headers(options.headers || {});
-    headers.set('Accept', 'application/json');
+    const headers = new Headers(options.headers || {})
+    headers.set("Accept", "application/json")
 
     // Só adiciona Content-Type para métodos com corpo
-    if (options.body && ['POST', 'PUT', 'PATCH'].includes(options.method?.toUpperCase() || '')) {
-      headers.set('Content-Type', 'application/json');
+    if (options.body && ["POST", "PUT", "PATCH"].includes(options.method?.toUpperCase() || "")) {
+      headers.set("Content-Type", "application/json")
     }
 
     try {
       const response = await fetch(`${this.baseURL}${endpoint}`, {
         ...options,
         headers,
-        credentials: 'include', // Importante para enviar cookies
+        credentials: "include", // Importante para enviar cookies
         signal: controller.signal,
-      });
+      })
 
-      clearTimeout(timeout);
+      clearTimeout(timeout)
 
       if (!response.ok) {
         if (response.status === 401) {
-          this.handleUnauthorizedError();
-          throw new Error('Sessão expirada');
+          this.handleUnauthorizedError()
+          throw new Error("Sessão expirada")
         }
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Erro HTTP: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}))
+        throw new Error(errorData.message || `Erro HTTP: ${response.status}`)
       }
 
-      return response.status === 204 ? {} as T : await response.json();
+      return response.status === 204 ? ({} as T) : await response.json()
     } catch (error) {
-      clearTimeout(timeout);
-      if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('Tempo limite excedido');
+      clearTimeout(timeout)
+      if (error instanceof Error && error.name === "AbortError") {
+        throw new Error("Tempo limite excedido")
       }
-      throw error;
+      throw error
     }
   }
 
   private handleUnauthorizedError() {
-    console.error('Acesso não autorizado - redirecionando');
-  //  if (typeof window !== 'undefined') {
-  //    window.location.href = '/'; // Ajuste para sua rota de login
- //   }
+    console.error("Acesso não autorizado - redirecionando")
+    //  if (typeof window !== 'undefined') {
+    //    window.location.href = '/'; // Ajuste para sua rota de login
+    //   }
   }
 
   // Métodos de autenticação
@@ -82,20 +82,20 @@ class ApiClient {
     return this.request<{ user: User }>("/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
-    });
+    })
   }
 
   async register(userData: {
-    name: string;
-    email: string;
-    password: string;
-    role?: string;
+    name: string
+    email: string
+    password: string
+    role?: string
   }) {
     // O cookie será setado automaticamente pelo navegador
     return this.request<{ user: User }>("/auth/register", {
       method: "POST",
       body: JSON.stringify(userData),
-    });
+    })
   }
 
   // === User methods ===
@@ -252,14 +252,14 @@ class ApiClient {
 
   async calculateRecipeCosts(recipeId: string) {
     return this.request<{
-      totalCost: number;
-      operationalCost: number;
-      finalCost: number;
-      sellingPrice: number;
-      profitMargin: number;
-      netProfit: number;
-      costPerServing: number;
-      pricePerServing: number;
+      totalCost: number
+      operationalCost: number
+      finalCost: number
+      sellingPrice: number
+      profitMargin: number
+      netProfit: number
+      costPerServing: number
+      pricePerServing: number
     }>(`/calculator/recipe/${recipeId}/calculate`, {
       method: "POST",
     })
@@ -313,9 +313,6 @@ class ApiClient {
 }
 
 export const api = new ApiClient(API_BASE_URL)
-
-// -- Os tipos podem continuar iguais --
-
 
 // Types
 

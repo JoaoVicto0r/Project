@@ -1,71 +1,56 @@
 "use client"
 
-import { Package, Plus, Search, Edit, Trash2, AlertTriangle, TrendingUp, TrendingDown } from "lucide-react"
+import { useState, useEffect } from "react"
+import { Package, Plus, Search, Filter, AlertTriangle, TrendingUp, TrendingDown, Edit, Trash2 } from "lucide-react"
 import Link from "next/link"
+import { api, type Ingredient } from "@/lib/api"
 
-export default function InsumoPage() {
-  const insumos = [
-    {
-      id: 1,
-      name: "Farinha de Trigo Especial",
-      description: "Farinha de trigo tipo 1, ideal para bolos e pães",
-      unit: "kg",
-      unitCost: 4.5,
-      stock: 25.5,
-      minStock: 10,
-      category: { id: 1, name: "Farinhas", color: "bg-yellow-500" },
-      supplier: { id: "1", name: "Moinho São Paulo" },
-      expirationDate: "2024-08-15",
-      isActive: true,
-      createdAt: "2024-01-15",
-    },
-    {
-      id: 2,
-      name: "Chocolate 70% Cacau",
-      description: "Chocolate amargo premium para confeitaria",
-      unit: "kg",
-      unitCost: 28.9,
-      stock: 3.2,
-      minStock: 5,
-      category: { id: 3, name: "Chocolates", color: "bg-orange-500" },
-      supplier: { id: "2", name: "Chocolates Premium" },
-      expirationDate: "2024-12-20",
-      isActive: true,
-      createdAt: "2024-02-01",
-    },
-    {
-      id: 3,
-      name: "Ovos Orgânicos",
-      description: "Ovos frescos de galinhas criadas livres",
-      unit: "dúzia",
-      unitCost: 8.5,
-      stock: 15,
-      minStock: 8,
-      category: { id: 2, name: "Laticínios", color: "bg-blue-500" },
-      supplier: { id: "3", name: "Fazenda Verde" },
-      expirationDate: "2024-07-25",
-      isActive: true,
-      createdAt: "2024-01-20",
-    },
-    {
-      id: 4,
-      name: "Açúcar Cristal",
-      description: "Açúcar cristal refinado especial",
-      unit: "kg",
-      unitCost: 3.2,
-      stock: 50,
-      minStock: 20,
-      category: { id: 6, name: "Açúcares", color: "bg-pink-500" },
-      supplier: { id: "4", name: "Distribuidora Central" },
-      expirationDate: "",
-      isActive: true,
-      createdAt: "2024-01-10",
-    },
-  ]
+export default function InsumosPage() {
+  const [ingredients, setIngredients] = useState<Ingredient[]>([])
+  const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [showLowStock, setShowLowStock] = useState(false)
+  const [stats, setStats] = useState({
+    totalIngredients: 0,
+    lowStockCount: 0,
+    totalStockValue: 0,
+    categoriesCount: 0,
+  })
 
-  const lowStockItems = insumos.filter((item) => item.stock <= item.minStock)
-  const totalValue = insumos.reduce((acc, item) => acc + item.unitCost * item.stock, 0)
-  const activeSuppliers = new Set(insumos.map((item) => item.supplier?.id).filter(Boolean)).size
+  useEffect(() => {
+    loadIngredients()
+    loadStats()
+  }, [selectedCategory, showLowStock])
+
+  const loadIngredients = async () => {
+    try {
+      setLoading(true)
+      const data = await api.getIngredients(selectedCategory || undefined, showLowStock)
+      setIngredients(data)
+    } catch (error) {
+      console.error("Erro ao carregar insumos:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadStats = async () => {
+    try {
+      const data = await api.getIngredientStats()
+      setStats(data)
+    } catch (error) {
+      console.error("Erro ao carregar estatísticas:", error)
+    }
+  }
+
+  // Filter ingredients based on search
+  const filteredIngredients = ingredients.filter((ingredient: Ingredient) => {
+    const matchesSearch =
+      ingredient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      ingredient.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    return matchesSearch
+  })
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat("pt-BR", {
@@ -74,20 +59,38 @@ export default function InsumoPage() {
     }).format(value)
   }
 
-  const isExpiringSoon = (expirationDate: string) => {
-    if (!expirationDate) return false
-    const today = new Date()
-    const expDate = new Date(expirationDate)
-    const diffTime = expDate.getTime() - today.getTime()
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-    return diffDays <= 30 && diffDays > 0
+  const getStockStatus = (ingredient: Ingredient) => {
+    if (ingredient.stock <= ingredient.minStock) {
+      return { status: "low", color: "text-red-600", bg: "bg-red-50", border: "border-red-200" }
+    }
+    if (ingredient.stock <= ingredient.minStock * 1.5) {
+      return { status: "medium", color: "text-yellow-600", bg: "bg-yellow-50", border: "border-yellow-200" }
+    }
+    return { status: "good", color: "text-green-600", bg: "bg-green-50", border: "border-green-200" }
   }
 
-  const isExpired = (expirationDate: string) => {
-    if (!expirationDate) return false
-    const today = new Date()
-    const expDate = new Date(expirationDate)
-    return expDate < today
+  const handleDelete = async (id: string) => {
+    if (confirm("Tem certeza que deseja excluir este insumo?")) {
+      try {
+        await api.deleteIngredient(id)
+        await loadIngredients()
+        await loadStats()
+      } catch (error) {
+        console.error("Erro ao excluir insumo:", error)
+        alert("Erro ao excluir insumo")
+      }
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <Package className="w-12 h-12 animate-pulse text-indigo-500 mx-auto mb-4" />
+          <p className="text-neutral-600 font-extrabold tracking-wider">Carregando insumos...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -95,16 +98,16 @@ export default function InsumoPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <div className="bg-green-500 text-white p-3 rounded-xl">
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-xl">
             <Package className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Insumos</h1>
-            <p className="text-gray-600">Gerencie seu estoque e controle de insumos</p>
+            <h1 className="text-2xl font-extrabold text-neutral-800 tracking-wider">Insumos</h1>
+            <p className="text-neutral-600 tracking-wider">Gerencie seu estoque e controle de insumos</p>
           </div>
         </div>
-        <Link href="/cadastro/insumo/novo">
-          <button className="bg-green-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 hover:bg-green-600 transition-colors">
+        <Link href="/insumos/novo">
+          <button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold tracking-wider px-4 py-2 rounded-lg flex items-center space-x-2 transition-all">
             <Plus className="w-4 h-4" />
             <span>Novo Insumo</span>
           </button>
@@ -112,62 +115,57 @@ export default function InsumoPage() {
       </div>
 
       {/* Alerts */}
-      {lowStockItems.length > 0 && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-4">
+      {stats.lowStockCount > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-xl p-4">
           <div className="flex items-center space-x-2 mb-2">
             <AlertTriangle className="w-5 h-5 text-red-600" />
-            <h3 className="font-medium text-red-800">Atenção: Estoque Baixo</h3>
+            <h3 className="font-extrabold text-red-800 tracking-wider">Atenção: Estoque Baixo</h3>
           </div>
-          <p className="text-red-700 text-sm mb-3">
-            {lowStockItems.length} insumo(s) com estoque abaixo do mínimo recomendado:
+          <p className="text-red-700 text-sm mb-3 tracking-wider">
+            {stats.lowStockCount} insumo(s) com estoque abaixo do mínimo recomendado
           </p>
-          <div className="flex flex-wrap gap-2">
-            {lowStockItems.map((item) => (
-              <span key={item.id} className="bg-red-100 text-red-800 px-2 py-1 rounded text-xs font-medium">
-                {item.name} ({item.stock} {item.unit})
-              </span>
-            ))}
-          </div>
         </div>
       )}
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total de Insumos</p>
-              <p className="text-2xl font-bold text-gray-900">{insumos.length}</p>
+              <p className="text-sm font-extrabold text-neutral-600 tracking-wider">TOTAL DE INSUMOS</p>
+              <p className="text-2xl font-extrabold text-neutral-800 tracking-wider">{stats.totalIngredients}</p>
             </div>
-            <Package className="w-8 h-8 text-blue-500" />
+            <Package className="w-8 h-8 text-indigo-500" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Estoque Baixo</p>
-              <p className="text-2xl font-bold text-red-600">{lowStockItems.length}</p>
+              <p className="text-sm font-extrabold text-neutral-600 tracking-wider">ESTOQUE BAIXO</p>
+              <p className="text-2xl font-extrabold text-red-600 tracking-wider">{stats.lowStockCount}</p>
             </div>
             <TrendingDown className="w-8 h-8 text-red-500" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Valor Total</p>
-              <p className="text-2xl font-bold text-green-600">{formatCurrency(totalValue)}</p>
+              <p className="text-sm font-extrabold text-neutral-600 tracking-wider">VALOR TOTAL</p>
+              <p className="text-2xl font-extrabold text-green-600 tracking-wider">
+                {formatCurrency(stats.totalStockValue)}
+              </p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
         </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-200">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Fornecedores</p>
-              <p className="text-2xl font-bold text-purple-600">{activeSuppliers}</p>
+              <p className="text-sm font-extrabold text-neutral-600 tracking-wider">CATEGORIAS</p>
+              <p className="text-2xl font-extrabold text-purple-600 tracking-wider">{stats.categoriesCount}</p>
             </div>
             <Package className="w-8 h-8 text-purple-500" />
           </div>
@@ -175,138 +173,157 @@ export default function InsumoPage() {
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-2xl p-6 shadow-sm">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-neutral-200">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0 gap-4">
           <div className="flex items-center space-x-4">
             <div className="relative">
-              <Search className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+              <Search className="w-5 h-5 text-neutral-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               <input
                 type="text"
                 placeholder="Buscar insumos..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent tracking-wider"
               />
             </div>
-            <select className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent">
-              <option value="">Todas as categorias</option>
-              <option value="1">Farinhas</option>
-              <option value="2">Laticínios</option>
-              <option value="3">Chocolates</option>
-              <option value="6">Açúcares</option>
-            </select>
+
+            <button
+              onClick={() => setShowLowStock(!showLowStock)}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg border transition-all font-extrabold tracking-wider ${
+                showLowStock
+                  ? "bg-red-50 border-red-200 text-red-700"
+                  : "border-neutral-300 text-neutral-700 hover:bg-neutral-50"
+              }`}
+            >
+              <Filter className="w-4 h-4" />
+              <span>Estoque Baixo</span>
+            </button>
+          </div>
+
+          <div className="text-sm font-extrabold text-neutral-600 tracking-wider">
+            {filteredIngredients.length} de {ingredients.length} insumos
           </div>
         </div>
       </div>
 
-      {/* Insumos Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {insumos.map((insumo) => (
-          <div key={insumo.id} className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow">
-            {/* Header do Card */}
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <div className="flex items-center space-x-3 mb-2">
-                  <h3 className="text-lg font-bold text-gray-900">{insumo.name}</h3>
-                  {insumo.stock <= insumo.minStock && (
-                    <AlertTriangle className="w-5 h-5 text-red-500" title="Estoque baixo" />
-                  )}
-                </div>
-                <div className="flex items-center space-x-2 mb-2">
-                  <span className={`${insumo.category.color} text-white px-2 py-1 rounded text-xs font-medium`}>
-                    {insumo.category.name}
-                  </span>
-                  {insumo.supplier && (
-                    <span className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs">{insumo.supplier.name}</span>
-                  )}
-                </div>
-                {insumo.description && <p className="text-gray-600 text-sm">{insumo.description}</p>}
-              </div>
-              <div className="flex items-center space-x-1">
-                <Link href={`/cadastro/insumo/${insumo.id}/editar`}>
-                  <button className="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg">
-                    <Edit className="w-4 h-4" />
-                  </button>
-                </Link>
-                <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
+      {/* Ingredients Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredIngredients.map((ingredient: Ingredient) => {
+          const stockStatus = getStockStatus(ingredient)
 
-            {/* Informações do Estoque */}
-            <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Estoque Atual:</span>
-                <span className={`font-medium ${insumo.stock <= insumo.minStock ? "text-red-600" : "text-gray-900"}`}>
-                  {insumo.stock} {insumo.unit}
+          return (
+            <div
+              key={ingredient.id}
+              className="bg-white rounded-xl shadow-sm border border-neutral-200 overflow-hidden hover:shadow-md transition-shadow"
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-neutral-100">
+                <div className="flex items-start justify-between mb-2">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="text-lg font-extrabold text-neutral-800 tracking-wider">{ingredient.name}</h3>
+                      {ingredient.stock <= ingredient.minStock && <AlertTriangle className="w-4 h-4 text-red-500" />}
+                    </div>
+
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-2 py-1 rounded text-xs font-extrabold tracking-wider">
+                        {ingredient.category?.name || "Sem categoria"}
+                      </span>
+                      {ingredient.supplier && (
+                        <span className="bg-neutral-100 text-neutral-700 px-2 py-1 rounded text-xs font-extrabold tracking-wider">
+                          {ingredient.supplier.name}
+                        </span>
+                      )}
+                    </div>
+
+                    {ingredient.description && (
+                      <p className="text-neutral-600 text-sm tracking-wider">{ingredient.description}</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center space-x-1">
+                    <Link href={`/insumos/${ingredient.id}/editar`}>
+                      <button className="p-2 text-neutral-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    </Link>
+                    <button
+                      onClick={() => handleDelete(ingredient.id)}
+                      className="p-2 text-neutral-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stock Info */}
+              <div className={`p-4 ${stockStatus.bg} ${stockStatus.border} border-t`}>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="font-extrabold text-neutral-600 tracking-wider mb-1">ESTOQUE ATUAL</p>
+                    <p className={`font-extrabold tracking-wider ${stockStatus.color}`}>
+                      {ingredient.stock} {ingredient.unit}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-extrabold text-neutral-600 tracking-wider mb-1">ESTOQUE MÍNIMO</p>
+                    <p className="font-extrabold text-neutral-700 tracking-wider">
+                      {ingredient.minStock} {ingredient.unit}
+                    </p>
+                  </div>
+
+                  <div>
+                    <p className="font-extrabold text-neutral-600 tracking-wider mb-1">CUSTO UNITÁRIO</p>
+                    <p className="font-extrabold text-blue-600 tracking-wider">{formatCurrency(ingredient.unitCost)}</p>
+                  </div>
+
+                  <div>
+                    <p className="font-extrabold text-neutral-600 tracking-wider mb-1">VALOR TOTAL</p>
+                    <p className="font-extrabold text-green-600 tracking-wider">
+                      {formatCurrency(ingredient.unitCost * ingredient.stock)}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="p-4 bg-neutral-50 border-t border-neutral-100 flex justify-between items-center">
+                <span
+                  className={`px-3 py-1 rounded-full text-xs font-extrabold tracking-wider ${
+                    ingredient.isActive ? "bg-green-100 text-green-800" : "bg-neutral-100 text-neutral-800"
+                  }`}
+                >
+                  {ingredient.isActive ? "ATIVO" : "INATIVO"}
                 </span>
+                <p className="text-xs font-extrabold text-neutral-500 tracking-wider">ID: {ingredient.id}</p>
               </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Estoque Mínimo:</span>
-                <span className="font-medium text-gray-700">
-                  {insumo.minStock} {insumo.unit}
-                </span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Custo Unitário:</span>
-                <span className="font-medium text-blue-600">{formatCurrency(insumo.unitCost)}</span>
-              </div>
-
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Valor Total:</span>
-                <span className="font-bold text-green-600">{formatCurrency(insumo.unitCost * insumo.stock)}</span>
-              </div>
-
-              {insumo.expirationDate && (
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Validade:</span>
-                  <span
-                    className={`font-medium text-sm ${
-                      isExpired(insumo.expirationDate)
-                        ? "text-red-600"
-                        : isExpiringSoon(insumo.expirationDate)
-                          ? "text-yellow-600"
-                          : "text-gray-700"
-                    }`}
-                  >
-                    {new Date(insumo.expirationDate).toLocaleDateString("pt-BR")}
-                    {isExpired(insumo.expirationDate) && " (Vencido)"}
-                    {isExpiringSoon(insumo.expirationDate) && " (Próximo ao vencimento)"}
-                  </span>
-                </div>
-              )}
             </div>
-
-            {/* Footer */}
-            <div className="pt-4 mt-4 border-t border-gray-100 flex justify-between items-center">
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  insumo.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-                }`}
-              >
-                {insumo.isActive ? "Ativo" : "Inativo"}
-              </span>
-              <p className="text-xs text-gray-500">
-                Cadastrado em {new Date(insumo.createdAt).toLocaleDateString("pt-BR")}
-              </p>
-            </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Empty State */}
-      {insumos.length === 0 && (
-        <div className="bg-white rounded-2xl p-12 text-center shadow-sm">
-          <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhum insumo cadastrado</h3>
-          <p className="text-gray-600 mb-6">Comece adicionando seus primeiros insumos para controlar o estoque.</p>
-          <Link href="/cadastro/insumo/novo">
-            <button className="bg-green-500 text-white px-6 py-3 rounded-lg flex items-center space-x-2 mx-auto hover:bg-green-600 transition-colors">
-              <Plus className="w-5 h-5" />
-              <span>Cadastrar Primeiro Insumo</span>
-            </button>
-          </Link>
+      {filteredIngredients.length === 0 && (
+        <div className="bg-white rounded-xl p-12 text-center shadow-sm border border-neutral-200">
+          <Package className="w-16 h-16 text-neutral-300 mx-auto mb-4" />
+          <h3 className="text-lg font-extrabold text-neutral-800 tracking-wider mb-2">
+            {searchTerm || showLowStock ? "Nenhum insumo encontrado" : "Nenhum insumo cadastrado"}
+          </h3>
+          <p className="text-neutral-600 tracking-wider mb-6">
+            {searchTerm || showLowStock
+              ? "Tente ajustar os filtros de busca."
+              : "Comece adicionando seus primeiros insumos para controlar o estoque."}
+          </p>
+          {!searchTerm && !showLowStock && (
+            <Link href="/insumos/novo">
+              <button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold tracking-wider px-6 py-3 rounded-lg flex items-center space-x-2 mx-auto transition-all">
+                <Plus className="w-5 h-5" />
+                <span>Cadastrar Primeiro Insumo</span>
+              </button>
+            </Link>
+          )}
         </div>
       )}
     </div>

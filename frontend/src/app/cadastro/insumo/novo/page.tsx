@@ -1,55 +1,44 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { InsumoForm } from "@/components/insumos/insumos-form";
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-
-interface InsumoFormData {
-  name: string
-  description: string
-  unit: string
-  unitCost: number
-  stock: number
-  minStock: number
-  expirationDate: string
-  isActive: boolean
-  categoryId: number
-  supplierId: string
-}
+import { InsumoForm } from "@/components/insumos/insumos-form"
+import { api, type CreateIngredientData, type Category, type Supplier } from "@/lib/api"
 
 export default function NovoInsumoPage() {
   const router = useRouter()
-  const [isLoading, setIsLoading] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
+  const [suppliers, setSuppliers] = useState<Supplier[]>([])
 
-  const handleSubmit = async (data: InsumoFormData) => {
-    setIsLoading(true)
+  useEffect(() => {
+    loadData()
+  }, [])
+
+  const loadData = async () => {
+    try {
+      const [categoriesData, suppliersData] = await Promise.all([api.getCategories(), api.getSuppliers()])
+      setCategories(categoriesData)
+      setSuppliers(suppliersData)
+    } catch (error) {
+      console.error("Erro ao carregar dados:", error)
+    }
+  }
+
+  const handleSubmit = async (data: CreateIngredientData) => {
+    setLoading(true)
 
     try {
-      // Simular chamada para API
-      console.log("Dados do insumo:", data)
-
-      // Aqui você faria a chamada real para sua API
-      // const response = await fetch('/api/insumos', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(data)
-      // })
-
-      // Simular delay da API
-      await new Promise((resolve) => setTimeout(resolve, 2000))
-
-      // Mostrar mensagem de sucesso
+      await api.createIngredient(data)
       alert("Insumo cadastrado com sucesso!")
-
-      // Redirecionar para a lista de insumos
       router.push("/insumos")
     } catch (error) {
       console.error("Erro ao cadastrar insumo:", error)
       alert("Erro ao cadastrar insumo. Tente novamente.")
     } finally {
-      setIsLoading(false)
+      setLoading(false)
     }
   }
 
@@ -60,23 +49,29 @@ export default function NovoInsumoPage() {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <div className="flex items-center space-x-2 text-sm text-gray-600">
-        <Link href="/insumos" className="flex items-center space-x-1 hover:text-green-600 transition-colors">
+      <div className="flex items-center space-x-2 text-sm text-neutral-600">
+        <Link href="/insumos" className="flex items-center space-x-1 hover:text-indigo-600 transition-colors">
           <ArrowLeft className="w-4 h-4" />
-          <span>Voltar para Insumos</span>
+          <span className="font-extrabold tracking-wider">Voltar para Insumos</span>
         </Link>
       </div>
 
       {/* Form */}
-      <InsumoForm onSubmit={handleSubmit} onCancel={handleCancel} isLoading={isLoading} mode="create" />
+      <InsumoForm
+        onSubmit={handleSubmit}
+        onCancel={handleCancel}
+        loading={loading}
+        categories={categories}
+        suppliers={suppliers}
+      />
 
       {/* Informações adicionais */}
-      <div className="bg-green-50 border border-green-200 rounded-2xl p-6 max-w-4xl mx-auto">
-        <h3 className="font-medium text-green-900 mb-3">💡 Dicas para cadastro de insumos</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-green-800">
+      <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-xl p-6">
+        <h3 className="font-extrabold text-indigo-900 tracking-wider mb-3">💡 Dicas para cadastro de insumos</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-indigo-800">
           <div>
-            <h4 className="font-medium mb-2">Informações Essenciais:</h4>
-            <ul className="space-y-1">
+            <h4 className="font-extrabold tracking-wider mb-2">Informações Essenciais:</h4>
+            <ul className="space-y-1 tracking-wider">
               <li>• Nome claro e específico do produto</li>
               <li>• Categoria para melhor organização</li>
               <li>• Unidade de medida correta</li>
@@ -84,12 +79,12 @@ export default function NovoInsumoPage() {
             </ul>
           </div>
           <div>
-            <h4 className="font-medium mb-2">Controle de Estoque:</h4>
-            <ul className="space-y-1">
+            <h4 className="font-extrabold tracking-wider mb-2">Controle de Estoque:</h4>
+            <ul className="space-y-1 tracking-wider">
               <li>• Defina um estoque mínimo adequado</li>
               <li>• Mantenha as quantidades atualizadas</li>
               <li>• Configure alertas para reposição</li>
-              <li>• Monitore datas de validade</li>
+              <li>• Monitore os cálculos automáticos</li>
             </ul>
           </div>
         </div>
