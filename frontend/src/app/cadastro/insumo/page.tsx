@@ -106,7 +106,7 @@ export default function InsumosPage() {
             <p className="text-neutral-600 tracking-wider">Gerencie seu estoque e controle de insumos</p>
           </div>
         </div>
-        <Link href="/insumos/novo">
+        <Link href="/cadastro/insumo/novo">
           <button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold tracking-wider px-4 py-2 rounded-lg flex items-center space-x-2 transition-all">
             <Plus className="w-4 h-4" />
             <span>Novo Insumo</span>
@@ -242,7 +242,7 @@ export default function InsumosPage() {
                   </div>
 
                   <div className="flex items-center space-x-1">
-                    <Link href={`/insumos/${ingredient.id}/editar`}>
+                    <Link href={`/cadastro/insumo/${ingredient.id}/editar`}>
                       <button className="p-2 text-neutral-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
                         <Edit className="w-4 h-4" />
                       </button>
@@ -317,7 +317,7 @@ export default function InsumosPage() {
               : "Comece adicionando seus primeiros insumos para controlar o estoque."}
           </p>
           {!searchTerm && !showLowStock && (
-            <Link href="cadastro/insumos/novo">
+            <Link href="/cadastro/insumo/novo">
               <button className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold tracking-wider px-6 py-3 rounded-lg flex items-center space-x-2 mx-auto transition-all">
                 <Plus className="w-5 h-5" />
                 <span>Cadastrar Primeiro Insumo</span>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
-import { InsumoForm } from "@/components/insumos/insumos-form"
+import { InsumoForm } from "@/components/insumos/insumo-form"
 import { api, type CreateIngredientData, type Category, type Supplier } from "@/lib/api"
 
 export default function NovoInsumoPage() {
@@ -33,7 +33,7 @@ export default function NovoInsumoPage() {
     try {
       await api.createIngredient(data)
       alert("Insumo cadastrado com sucesso!")
-      router.push("/insumos")
+      router.push("/cadastro/insumo")
     } catch (error) {
       console.error("Erro ao cadastrar insumo:", error)
       alert("Erro ao cadastrar insumo. Tente novamente.")
@@ -43,14 +43,14 @@ export default function NovoInsumoPage() {
   }
 
   const handleCancel = () => {
-    router.push("/insumos")
+    router.push("/cadastro/insumo")
   }
 
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center space-x-2 text-sm text-neutral-600">
-        <Link href="/insumos" className="flex items-center space-x-1 hover:text-indigo-600 transition-colors">
+        <Link href="/cadastro/insumo" className="flex items-center space-x-1 hover:text-indigo-600 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           <span className="font-extrabold tracking-wider">Voltar para Insumos</span>
         </Link>
