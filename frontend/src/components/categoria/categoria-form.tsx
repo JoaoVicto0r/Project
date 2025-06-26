@@ -3,252 +3,318 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Save, X, Tag, FileText, Palette } from "lucide-react"
+import { X, Save, Tag } from "lucide-react"
 
 interface CategoriaFormData {
   name: string
   description: string
+  color: string
 }
 
 interface CategoriaFormProps {
   initialData?: Partial<CategoriaFormData>
   onSubmit: (data: CategoriaFormData) => Promise<void>
   onCancel: () => void
-  isLoading?: boolean
+  loading?: boolean
   mode?: "create" | "edit"
 }
 
-export  function CategoriaForm({
+const predefinedColors = [
+  {
+    name: "Azul",
+    value: "bg-blue-500",
+    textColor: "text-blue-700",
+    bgColor: "bg-blue-50",
+    borderColor: "border-blue-200",
+  },
+  {
+    name: "Verde",
+    value: "bg-green-500",
+    textColor: "text-green-700",
+    bgColor: "bg-green-50",
+    borderColor: "border-green-200",
+  },
+  {
+    name: "Roxo",
+    value: "bg-purple-500",
+    textColor: "text-purple-700",
+    bgColor: "bg-purple-50",
+    borderColor: "border-purple-200",
+  },
+  {
+    name: "Rosa",
+    value: "bg-pink-500",
+    textColor: "text-pink-700",
+    bgColor: "bg-pink-50",
+    borderColor: "border-pink-200",
+  },
+  {
+    name: "Laranja",
+    value: "bg-orange-500",
+    textColor: "text-orange-700",
+    bgColor: "bg-orange-50",
+    borderColor: "border-orange-200",
+  },
+  {
+    name: "Vermelho",
+    value: "bg-red-500",
+    textColor: "text-red-700",
+    bgColor: "bg-red-50",
+    borderColor: "border-red-200",
+  },
+  {
+    name: "Amarelo",
+    value: "bg-yellow-500",
+    textColor: "text-yellow-700",
+    bgColor: "bg-yellow-50",
+    borderColor: "border-yellow-200",
+  },
+  {
+    name: "Indigo",
+    value: "bg-indigo-500",
+    textColor: "text-indigo-700",
+    bgColor: "bg-indigo-50",
+    borderColor: "border-indigo-200",
+  },
+]
+
+const categorySuggestions = [
+  { name: "Bolos", description: "Bolos tradicionais, bolos de festa, cupcakes", color: "bg-blue-500" },
+  { name: "Tortas", description: "Tortas doces e salgadas, quiches, empadas", color: "bg-green-500" },
+  { name: "Doces", description: "Brigadeiros, beijinhos, trufas, bombons", color: "bg-pink-500" },
+  { name: "Pães", description: "Pães doces, pães salgados, brioches", color: "bg-orange-500" },
+  { name: "Biscoitos", description: "Cookies, biscoitos decorados, bolachas", color: "bg-purple-500" },
+  { name: "Sobremesas", description: "Pudins, mousses, pavês, gelatinas", color: "bg-yellow-500" },
+  { name: "Salgados", description: "Coxinhas, pastéis, esfirras, sanduíches", color: "bg-red-500" },
+  { name: "Bebidas", description: "Sucos, vitaminas, cafés especiais", color: "bg-indigo-500" },
+]
+
+export default function CategoriaForm({
   initialData,
   onSubmit,
   onCancel,
-  isLoading = false,
+  loading = false,
   mode = "create",
 }: CategoriaFormProps) {
   const [formData, setFormData] = useState<CategoriaFormData>({
     name: initialData?.name || "",
     description: initialData?.description || "",
+    color: initialData?.color || "bg-blue-500",
   })
 
-  const [errors, setErrors] = useState<Partial<CategoriaFormData>>({})
+  const [error, setError] = useState("")
 
-  // Cores predefinidas para as categorias
-  const predefinedColors = [
-    { name: "Azul", value: "bg-blue-500", textColor: "text-blue-700" },
-    { name: "Verde", value: "bg-green-500", textColor: "text-green-700" },
-    { name: "Roxo", value: "bg-purple-500", textColor: "text-purple-700" },
-    { name: "Rosa", value: "bg-pink-500", textColor: "text-pink-700" },
-    { name: "Laranja", value: "bg-orange-500", textColor: "text-orange-700" },
-    { name: "Vermelho", value: "bg-red-500", textColor: "text-red-700" },
-    { name: "Amarelo", value: "bg-yellow-500", textColor: "text-yellow-700" },
-    { name: "Indigo", value: "bg-indigo-500", textColor: "text-indigo-700" },
-  ]
-
-  const [selectedColor, setSelectedColor] = useState(predefinedColors[0])
-
-  // Sugestões de categorias comuns
-  const categorySuggestions = [
-    { name: "Bolos", description: "Bolos tradicionais, bolos de festa, cupcakes" },
-    { name: "Tortas", description: "Tortas doces e salgadas, quiches, empadas" },
-    { name: "Doces", description: "Brigadeiros, beijinhos, trufas, bombons" },
-    { name: "Pães", description: "Pães doces, pães salgados, brioches" },
-    { name: "Biscoitos", description: "Cookies, biscoitos decorados, bolachas" },
-    { name: "Sobremesas", description: "Pudins, mousses, pavês, gelatinas" },
-    { name: "Salgados", description: "Coxinhas, pastéis, esfirras, sanduíches" },
-    { name: "Bebidas", description: "Sucos, vitaminas, cafés especiais" },
-  ]
-
-  const validateForm = (): boolean => {
-    const newErrors: Partial<CategoriaFormData> = {}
-
-    // Nome é obrigatório
-    if (!formData.name.trim()) {
-      newErrors.name = "Nome da categoria é obrigatório"
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Nome deve ter pelo menos 2 caracteres"
-    } else if (formData.name.trim().length > 50) {
-      newErrors.name = "Nome deve ter no máximo 50 caracteres"
-    }
-
-    // Descrição opcional, mas se preenchida deve ter pelo menos 10 caracteres
-    if (formData.description.trim() && formData.description.trim().length < 10) {
-      newErrors.description = "Descrição deve ter pelo menos 10 caracteres"
-    }
-
-    setErrors(newErrors)
-    return Object.keys(newErrors).length === 0
-  }
+  const selectedColor = predefinedColors.find((c) => c.value === formData.color) || predefinedColors[0]
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setError("")
 
-    if (!validateForm()) {
+    if (!formData.name?.trim()) {
+      setError("Nome da categoria é obrigatório")
       return
     }
 
-    try {
-      await onSubmit(formData)
-    } catch (error) {
-      console.error("Erro ao salvar categoria:", error)
+    if (formData.name.trim().length < 2) {
+      setError("Nome deve ter pelo menos 2 caracteres")
+      return
     }
+
+    if (formData.name.trim().length > 50) {
+      setError("Nome deve ter no máximo 50 caracteres")
+      return
+    }
+
+    if (formData.description.trim() && formData.description.trim().length < 10) {
+      setError("Descrição deve ter pelo menos 10 caracteres")
+      return
+    }
+
+    await onSubmit(formData)
   }
 
-  const handleInputChange = (field: keyof CategoriaFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-
-    // Limpar erro do campo quando o usuário começar a digitar
-    if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
-    }
-  }
-
-  const handleSuggestionClick = (suggestion: { name: string; description: string }) => {
+  const handleSuggestionClick = (suggestion: { name: string; description: string; color: string }) => {
     setFormData({
       name: suggestion.name,
       description: suggestion.description,
+      color: suggestion.color,
     })
-    setErrors({})
+    setError("")
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg max-w-2xl mx-auto">
+    <div className="bg-white rounded-xl shadow-lg border border-neutral-200 overflow-hidden">
       {/* Header */}
-      <div className={`${selectedColor.value} text-white p-6 rounded-t-2xl`}>
-        <div className="flex items-center space-x-3">
-          <div className="bg-white/20 p-2 rounded-lg">
-            <Tag className="w-6 h-6" />
+      <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Tag className="w-6 h-6 text-white" />
+            <h3 className="text-xl font-extrabold text-white tracking-wider">
+              {mode === "create" ? "Nova Categoria" : "Editar Categoria"}
+            </h3>
           </div>
-          <div>
-            <h2 className="text-xl font-bold">{mode === "create" ? "Nova Categoria" : "Editar Categoria"}</h2>
-            <p className="text-white/90">
-              {mode === "create" ? "Organize seus produtos por categoria" : "Atualize os dados da categoria"}
-            </p>
-          </div>
+          <button onClick={onCancel} className="p-2 hover:bg-white/20 rounded-lg transition-colors" disabled={loading}>
+            <X className="w-5 h-5 text-white" />
+          </button>
         </div>
       </div>
 
-      {/* Form */}
       <form onSubmit={handleSubmit} className="p-6 space-y-6">
-        {/* Nome */}
-        <div>
-          <label className="form-label flex items-center space-x-2">
-            <Tag className="w-4 h-4 text-gray-500" />
-            <span>Nome da Categoria *</span>
-          </label>
-          <input
-            type="text"
-            value={formData.name}
-            onChange={(e) => handleInputChange("name", e.target.value)}
-            className={`form-input ${errors.name ? "border-red-500 focus:ring-red-500" : ""}`}
-            placeholder="Ex: Bolos, Tortas, Doces..."
-            disabled={isLoading}
-            maxLength={50}
-          />
-          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-          <p className="text-gray-500 text-xs mt-1">{formData.name.length}/50 caracteres</p>
+        {error && (
+          <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm flex items-center gap-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+            {error}
+          </div>
+        )}
+
+        {/* Basic Information */}
+        <div className="space-y-4">
+          <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
+            <div className="w-1 h-6 bg-indigo-500 rounded"></div>
+            Informações Básicas
+          </h4>
+
+          <div>
+            <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">
+              Nome da Categoria *
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              disabled={loading}
+              placeholder="Ex: Bolos, Tortas, Doces..."
+              maxLength={50}
+              className="w-full px-4 py-3 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all disabled:opacity-50"
+            />
+            <p className="text-xs text-neutral-500 mt-1 tracking-wider">{formData.name.length}/50 caracteres</p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-extrabold text-neutral-700 mb-2 tracking-wider">Descrição</label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              rows={3}
+              disabled={loading}
+              placeholder="Descreva que tipos de produtos pertencem a esta categoria..."
+              maxLength={200}
+              className="w-full px-4 py-3 border border-neutral-300 text-neutral-800 rounded-lg focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none tracking-wider transition-all resize-none disabled:opacity-50"
+            />
+            <p className="text-xs text-neutral-500 mt-1 tracking-wider">{formData.description.length}/200 caracteres</p>
+          </div>
         </div>
 
-        {/* Descrição */}
-        <div>
-          <label className="form-label flex items-center space-x-2">
-            <FileText className="w-4 h-4 text-gray-500" />
-            <span>Descrição</span>
-          </label>
-          <textarea
-            value={formData.description}
-            onChange={(e) => handleInputChange("description", e.target.value)}
-            className={`form-input resize-none ${errors.description ? "border-red-500 focus:ring-red-500" : ""}`}
-            rows={3}
-            placeholder="Descreva que tipos de produtos pertencem a esta categoria..."
-            disabled={isLoading}
-            maxLength={200}
-          />
-          {errors.description && <p className="text-red-500 text-sm mt-1">{errors.description}</p>}
-          <p className="text-gray-500 text-xs mt-1">{formData.description.length}/200 caracteres</p>
-        </div>
+        {/* Color Selection */}
+        <div className="space-y-4">
+          <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
+            <div className="w-1 h-6 bg-purple-500 rounded"></div>
+            Cor da Categoria
+          </h4>
 
-        {/* Seletor de Cor */}
-        <div>
-          <label className="form-label flex items-center space-x-2">
-            <Palette className="w-4 h-4 text-gray-500" />
-            <span>Cor da Categoria</span>
-          </label>
           <div className="grid grid-cols-4 gap-3">
             {predefinedColors.map((color) => (
               <button
                 key={color.name}
                 type="button"
-                onClick={() => setSelectedColor(color)}
+                onClick={() => setFormData({ ...formData, color: color.value })}
+                disabled={loading}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   selectedColor.name === color.name
-                    ? "border-gray-400 scale-105"
-                    : "border-gray-200 hover:border-gray-300"
+                    ? "border-indigo-400 scale-105 shadow-md"
+                    : "border-neutral-200 hover:border-neutral-300"
                 }`}
-                disabled={isLoading}
               >
                 <div className={`w-full h-8 ${color.value} rounded mb-2`}></div>
-                <p className={`text-xs font-medium ${color.textColor}`}>{color.name}</p>
+                <p className={`text-xs font-extrabold tracking-wider ${color.textColor}`}>{color.name}</p>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Preview da Categoria */}
-        <div className="bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-medium text-gray-900 mb-2">Preview da Categoria</h3>
-          <div className="flex items-center space-x-3">
-            <div className={`${selectedColor.value} text-white px-3 py-1 rounded-full text-sm font-medium`}>
-              {formData.name || "Nome da categoria"}
+        {/* Preview */}
+        <div className="space-y-4">
+          <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
+            <div className="w-1 h-6 bg-green-500 rounded"></div>
+            Preview da Categoria
+          </h4>
+
+          <div className={`${selectedColor.bgColor} ${selectedColor.borderColor} border rounded-lg p-4`}>
+            <div className="flex items-center space-x-3">
+              <div
+                className={`${selectedColor.value} text-white px-3 py-1 rounded-full text-sm font-extrabold tracking-wider`}
+              >
+                {formData.name || "Nome da categoria"}
+              </div>
+              {formData.description && (
+                <p className={`text-sm tracking-wider ${selectedColor.textColor}`}>{formData.description}</p>
+              )}
             </div>
-            {formData.description && <p className="text-gray-600 text-sm">{formData.description}</p>}
           </div>
         </div>
 
-        {/* Sugestões (apenas no modo criar) */}
+        {/* Suggestions */}
         {mode === "create" && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h3 className="font-medium text-blue-900 mb-3">💡 Sugestões de Categorias</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-              {categorySuggestions.map((suggestion) => (
-                <button
-                  key={suggestion.name}
-                  type="button"
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="text-left p-2 rounded hover:bg-blue-100 transition-colors"
-                  disabled={isLoading}
-                >
-                  <p className="font-medium text-blue-900 text-sm">{suggestion.name}</p>
-                  <p className="text-blue-700 text-xs">{suggestion.description}</p>
-                </button>
-              ))}
+          <div className="space-y-4">
+            <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
+              <div className="w-1 h-6 bg-yellow-500 rounded"></div>
+              Sugestões de Categorias
+            </h4>
+
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {categorySuggestions.map((suggestion) => {
+                  const suggestionColor =
+                    predefinedColors.find((c) => c.value === suggestion.color) || predefinedColors[0]
+                  return (
+                    <button
+                      key={suggestion.name}
+                      type="button"
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      disabled={loading}
+                      className="text-left p-3 rounded-lg border border-indigo-100 hover:bg-white transition-colors"
+                    >
+                      <div className="flex items-center space-x-2 mb-1">
+                        <div className={`w-3 h-3 ${suggestion.color} rounded-full`}></div>
+                        <p className="font-extrabold text-indigo-900 text-sm tracking-wider">{suggestion.name}</p>
+                      </div>
+                      <p className="text-indigo-700 text-xs tracking-wider">{suggestion.description}</p>
+                    </button>
+                  )
+                })}
+              </div>
             </div>
           </div>
         )}
 
         {/* Buttons */}
-        <div className="flex items-center justify-end space-x-3 pt-4 border-t border-gray-200">
+        <div className="flex gap-4 pt-6 border-t border-neutral-200">
           <button
-            type="button"
-            onClick={onCancel}
-            className="btn-secondary flex items-center space-x-2"
-            disabled={isLoading}
+            type="submit"
+            disabled={loading}
+            className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold tracking-wider rounded-lg px-6 py-3 flex items-center justify-center gap-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <X className="w-4 h-4" />
-            <span>Cancelar</span>
-          </button>
-
-          <button type="submit" className="btn-primary flex items-center space-x-2" disabled={isLoading}>
-            {isLoading ? (
+            {loading ? (
               <>
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                <span>Salvando...</span>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Salvando...
               </>
             ) : (
               <>
                 <Save className="w-4 h-4" />
-                <span>{mode === "create" ? "Criar Categoria" : "Atualizar"}</span>
+                {mode === "create" ? "Criar Categoria" : "Atualizar Categoria"}
               </>
             )}
+          </button>
+
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={loading}
+            className="px-6 py-3 border border-neutral-300 text-neutral-700 font-extrabold tracking-wider rounded-lg hover:bg-neutral-50 transition-all disabled:opacity-50"
+          >
+            Cancelar
           </button>
         </div>
       </form>
