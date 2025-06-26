@@ -89,7 +89,7 @@ const categorySuggestions = [
   { name: "Bebidas", description: "Sucos, vitaminas, cafés especiais", color: "bg-indigo-500" },
 ]
 
-export default function CategoriaForm({
+export function CategoriaForm({
   initialData,
   onSubmit,
   onCancel,
