@@ -18,7 +18,7 @@ export function useRecipes(categoryId?: string) {
   const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await api.getRecipes(safeNumber(categoryId))
+      const data = await api.getRecipes(safeNumber(categoryId)) // Corrigido: categoryId convertido para number
       setRecipes(data)
       setError(null)
     } catch (err) {
