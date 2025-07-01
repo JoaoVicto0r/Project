@@ -1,17 +1,24 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { api, type Recipe, type CreateRecipeData } from "@/lib/api"
+
+// Função utilitária para conversão segura de string para number
+const safeNumber = (value: unknown): number | undefined => {
+  if (value === null || value === undefined || value === "") return undefined
+  const num = Number(value)
+  return isNaN(num) ? undefined : num
+}
 
 export function useRecipes(categoryId?: string) {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchRecipes = async () => {
+  const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await api.getRecipes(categoryId)
+      const data = await api.getRecipes(safeNumber(categoryId))
       setRecipes(data)
       setError(null)
     } catch (err) {
@@ -19,11 +26,11 @@ export function useRecipes(categoryId?: string) {
     } finally {
       setLoading(false)
     }
-  }
+  }, [categoryId])
 
   useEffect(() => {
     fetchRecipes()
-  }, [categoryId])
+  }, [fetchRecipes])
 
   const createRecipe = async (data: CreateRecipeData) => {
     try {
@@ -31,17 +38,19 @@ export function useRecipes(categoryId?: string) {
       setRecipes((prev) => [newRecipe, ...prev])
       return newRecipe
     } catch (err) {
-      throw err
+      throw err instanceof Error ? err : new Error("Erro ao criar receita")
     }
   }
 
   const updateRecipe = async (id: string, data: Partial<CreateRecipeData>) => {
     try {
       const updatedRecipe = await api.updateRecipe(id, data)
-      setRecipes((prev) => prev.map((recipe) => (recipe.id === id ? updatedRecipe : recipe)))
+      setRecipes((prev) =>
+        prev.map((recipe) => (recipe.id === id ? updatedRecipe : recipe))
+      )
       return updatedRecipe
     } catch (err) {
-      throw err
+      throw err instanceof Error ? err : new Error("Erro ao atualizar receita")
     }
   }
 
@@ -50,7 +59,7 @@ export function useRecipes(categoryId?: string) {
       await api.deleteRecipe(id)
       setRecipes((prev) => prev.filter((recipe) => recipe.id !== id))
     } catch (err) {
-      throw err
+      throw err instanceof Error ? err : new Error("Erro ao deletar receita")
     }
   }
 
@@ -70,24 +79,24 @@ export function useRecipe(id: string) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
+  const fetchRecipe = useCallback(async () => {
     if (!id) return
 
-    const fetchRecipe = async () => {
-      try {
-        setLoading(true)
-        const data = await api.getRecipe(id)
-        setRecipe(data)
-        setError(null)
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Erro ao carregar receita")
-      } finally {
-        setLoading(false)
-      }
+    try {
+      setLoading(true)
+      const data = await api.getRecipe(id)
+      setRecipe(data)
+      setError(null)
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro ao carregar receita")
+    } finally {
+      setLoading(false)
     }
-
-    fetchRecipe()
   }, [id])
 
-  return { recipe, loading, error }
+  useEffect(() => {
+    fetchRecipe()
+  }, [fetchRecipe])
+
+  return { recipe, loading, error, refetch: fetchRecipe }
 }
