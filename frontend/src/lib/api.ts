@@ -119,12 +119,14 @@ class ApiClient {
 
   // === Recipes methods ===
 
-  async getRecipes(categoryId?: string) {
-    const params = new URLSearchParams()
-    if (categoryId) params.append("categoryId", categoryId)
-    const queryString = params.toString()
-    return this.request<Recipe[]>(`/recipes${queryString ? `?${queryString}` : ""}`)
-  }
+  async getRecipes(categoryId?: number) {
+    const params = new URLSearchParams();
+    if (categoryId !== undefined) {
+        params.append("categoryId", categoryId.toString());
+    }
+    const queryString = params.toString();
+    return this.request<Recipe[]>(`/recipes${queryString ? `?${queryString}` : ""}`);
+}
 
   async getRecipe(id: string) {
     return this.request<Recipe>(`/recipes/${id}`)
@@ -162,14 +164,22 @@ class ApiClient {
 
   // === Ingredients methods ===
 
-  async getIngredients(categoryId?: string, lowStock?: boolean) {
-    const params = new URLSearchParams()
-    if (categoryId) params.append("categoryId", categoryId)
-    if (lowStock) params.append("lowStock", "true")
-    const queryString = params.toString()
-
-    return this.request<Ingredient[]>(`/ingredients${queryString ? `?${queryString}` : ""}`)
-  }
+  async getIngredients(categoryId?: number, lowStock?: boolean) {
+    const params = new URLSearchParams();
+    
+    
+    if (categoryId !== undefined && categoryId !== null) {
+        params.append("categoryId", categoryId.toString());
+    }
+    
+    
+    if (lowStock) {
+        params.append("lowStock", "true");
+    }
+    
+    const queryString = params.toString();
+    return this.request<Ingredient[]>(`/ingredients${queryString ? `?${queryString}` : ""}`);
+}
 
   async getIngredient(id: string) {
     return this.request<Ingredient>(`/ingredients/${id}`)
@@ -331,7 +341,7 @@ export interface Recipe {
   profitMargin: number
   netProfit: number
   isActive: boolean
-  categoryId?: string
+  categoryId?: number
   category?: Category
   recipeIngredients?: RecipeIngredient[]
   createdAt: string
@@ -400,7 +410,7 @@ export interface CreateRecipeData {
   instructions?: string
   operationalCost?: number
   sellingPrice?: number
-  categoryId?: string
+  categoryId?: number
   ingredients?: { ingredientId: string; quantity: number }[]
 }
 
