@@ -9,7 +9,8 @@ export default function InsumosPage() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
+  // Corrigido: tipagem explícita e valor inicial undefined
+  const [selectedCategory, setSelectedCategory] = useState<number | undefined>(undefined)
   const [showLowStock, setShowLowStock] = useState(false)
   const [stats, setStats] = useState({
     totalIngredients: 0,
@@ -26,7 +27,8 @@ export default function InsumosPage() {
   const loadIngredients = async () => {
     try {
       setLoading(true)
-      const data = await api.getIngredients(selectedCategory || undefined, showLowStock)
+      // Agora selectedCategory já é number | undefined
+      const data = await api.getIngredients(selectedCategory, showLowStock)
       setIngredients(data)
     } catch (error) {
       console.error("Erro ao carregar insumos:", error)
