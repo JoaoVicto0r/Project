@@ -3,14 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { api, type Recipe, type CreateRecipeData } from "@/lib/api"
 
-// Função utilitária para conversão segura de string para number
-const safeNumber = (value: unknown): number | undefined => {
-  if (value === null || value === undefined || value === "") return undefined
-  const num = Number(value)
-  return isNaN(num) ? undefined : num
-}
-
-export function useRecipes(categoryId?: string) {
+export function useRecipes(categoryId?: number) {
   const [recipes, setRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -18,7 +11,7 @@ export function useRecipes(categoryId?: string) {
   const fetchRecipes = useCallback(async () => {
     try {
       setLoading(true)
-      const data = await api.getRecipes(safeNumber(categoryId)) // Corrigido: categoryId convertido para number
+      const data = await api.getRecipes(categoryId) // categoryId agora é number | undefined
       setRecipes(data)
       setError(null)
     } catch (err) {
@@ -72,31 +65,4 @@ export function useRecipes(categoryId?: string) {
     deleteRecipe,
     refetch: fetchRecipes,
   }
-}
-
-export function useRecipe(id: string) {
-  const [recipe, setRecipe] = useState<Recipe | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchRecipe = useCallback(async () => {
-    if (!id) return
-
-    try {
-      setLoading(true)
-      const data = await api.getRecipe(id)
-      setRecipe(data)
-      setError(null)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Erro ao carregar receita")
-    } finally {
-      setLoading(false)
-    }
-  }, [id])
-
-  useEffect(() => {
-    fetchRecipe()
-  }, [fetchRecipe])
-
-  return { recipe, loading, error, refetch: fetchRecipe }
 }
