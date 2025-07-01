@@ -23,7 +23,7 @@ export function RecipeForm({ onSubmit, initialData, loading, onCancel }: RecipeF
     instructions: "",
     operationalCost: 0,
     sellingPrice: 0,
-    categoryId: "",
+    categoryId: undefined,
     ingredients: [],
     ...initialData,
   })
