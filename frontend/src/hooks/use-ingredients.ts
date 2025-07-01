@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { api, type Ingredient, type CreateIngredientData } from "@/lib/api"
 
-export function useIngredients(categoryId?: string, lowStock?: boolean) {
+export function useIngredients(categoryId?: number, lowStock?: boolean) {
   const [ingredients, setIngredients] = useState<Ingredient[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
