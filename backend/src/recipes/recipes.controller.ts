@@ -30,7 +30,7 @@ export class RecipesController {
   }
 
   @Get()
-  findAll(@Request() req, @Query('categoryId') categoryId?: string) {
+  findAll(@Request() req, @Query('categoryId') categoryId?: number) {
     const categoryIdNumber = categoryId ? Number(categoryId) : undefined;
     return this.recipesService.findAll(req.user.userId, categoryIdNumber);
   }
