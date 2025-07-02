@@ -119,13 +119,15 @@ class ApiClient {
 
   // === Recipes methods ===
 
-  async getRecipes(categoryId?: number) {
-    const params = new URLSearchParams();
-    if (categoryId !== undefined) {
-        params.append("categoryId", categoryId.toString());
-    }
-    const queryString = params.toString();
-    return this.request<Recipe[]>(`/recipes${queryString ? `?${queryString}` : ""}`);
+ async getRecipes(categoryId?: number) {
+  const params = new URLSearchParams();
+
+  if (typeof categoryId === "number" && !isNaN(categoryId)) {
+    params.append("categoryId", categoryId.toString());
+  }
+
+  const queryString = params.toString();
+  return this.request<Recipe[]>(`/recipes${queryString ? `?${queryString}` : ""}`);
 }
 
   async getRecipe(id: string) {
