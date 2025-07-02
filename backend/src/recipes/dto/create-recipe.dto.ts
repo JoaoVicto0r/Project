@@ -35,7 +35,7 @@ export class CreateRecipeDto {
   @IsString()
   instructions?: string;
 
-  @IsString()
+  @IsNumber()
   categoryId: number;
 
 
