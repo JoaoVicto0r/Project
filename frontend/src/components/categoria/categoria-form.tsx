@@ -1,18 +1,15 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { X, Save, Tag } from "lucide-react"
 
 interface CategoriaFormData {
   name: string
   description: string
-  color: string
 }
 
 interface CategoriaFormProps {
-  initialData?: Partial<CategoriaFormData>
+  initialData?: Partial<CategoriaFormData & { color?: string }>
   onSubmit: (data: CategoriaFormData) => Promise<void>
   onCancel: () => void
   loading?: boolean
@@ -96,10 +93,10 @@ export function CategoriaForm({
   loading = false,
   mode = "create",
 }: CategoriaFormProps) {
-  const [formData, setFormData] = useState<CategoriaFormData>({
+  const [formData, setFormData] = useState({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    color: initialData?.color || "bg-blue-500",
+    color: initialData?.color || "bg-blue-500", // Only for UI
   })
 
   const [error, setError] = useState("")
@@ -130,14 +127,18 @@ export function CategoriaForm({
       return
     }
 
-    await onSubmit(formData)
+    // Only submit name and description to the API
+    await onSubmit({
+      name: formData.name,
+      description: formData.description,
+    })
   }
 
   const handleSuggestionClick = (suggestion: { name: string; description: string; color: string }) => {
     setFormData({
       name: suggestion.name,
       description: suggestion.description,
-      color: suggestion.color,
+      color: suggestion.color, // Only for UI
     })
     setError("")
   }
@@ -206,11 +207,11 @@ export function CategoriaForm({
           </div>
         </div>
 
-        {/* Color Selection */}
+        {/* Color Selection (UI Only) */}
         <div className="space-y-4">
           <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
             <div className="w-1 h-6 bg-purple-500 rounded"></div>
-            Cor da Categoria
+            Cor da Categoria (Visual)
           </h4>
 
           <div className="grid grid-cols-4 gap-3">
