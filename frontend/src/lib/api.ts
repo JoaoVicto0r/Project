@@ -12,7 +12,7 @@ export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://price-d2
 
 class ApiClient {
   private baseURL: string
-  private timeoutMs = 10000
+  private timeoutMs = 30000
 
   constructor(baseURL: string) {
     this.baseURL = baseURL
