@@ -137,8 +137,8 @@ export default function CategoriaPage() {
             <Tag className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-2xl font-extrabold text-neutral-800 tracking-wider">Categorias</h1>
-            <p className="text-neutral-600 tracking-wider">Organize suas receitas e insumos</p>
+            <h1 className="text-2xl font-extrabold text-white tracking-wider">Categorias</h1>
+            <p className="text-white tracking-wider">Organize suas receitas e insumos</p>
           </div>
         </div>
         <Link href="/cadastro/categoria/novo">

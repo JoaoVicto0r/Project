@@ -1,15 +1,15 @@
 "use client"
-
 import { useState } from "react"
 import { X, Save, Tag } from "lucide-react"
 
 interface CategoriaFormData {
   name: string
   description: string
+  color: string // Agora incluímos a cor nos dados salvos
 }
 
 interface CategoriaFormProps {
-  initialData?: Partial<CategoriaFormData & { color?: string }>
+  initialData?: Partial<CategoriaFormData>
   onSubmit: (data: CategoriaFormData) => Promise<void>
   onCancel: () => void
   loading?: boolean
@@ -93,10 +93,10 @@ export function CategoriaForm({
   loading = false,
   mode = "create",
 }: CategoriaFormProps) {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CategoriaFormData>({
     name: initialData?.name || "",
     description: initialData?.description || "",
-    color: initialData?.color || "bg-blue-500", // Only for UI
+    color: initialData?.color || "bg-blue-500",
   })
 
   const [error, setError] = useState("")
@@ -127,18 +127,19 @@ export function CategoriaForm({
       return
     }
 
-    // Only submit name and description to the API
+    // Agora envia todos os dados, incluindo a cor
     await onSubmit({
       name: formData.name,
       description: formData.description,
+      color: formData.color
     })
   }
 
-  const handleSuggestionClick = (suggestion: { name: string; description: string; color: string }) => {
+  const handleSuggestionClick = (suggestion: typeof categorySuggestions[0]) => {
     setFormData({
       name: suggestion.name,
       description: suggestion.description,
-      color: suggestion.color, // Only for UI
+      color: suggestion.color,
     })
     setError("")
   }
@@ -207,11 +208,11 @@ export function CategoriaForm({
           </div>
         </div>
 
-        {/* Color Selection (UI Only) */}
+        {/* Color Selection */}
         <div className="space-y-4">
           <h4 className="text-lg font-extrabold text-neutral-800 tracking-wider flex items-center gap-2">
             <div className="w-1 h-6 bg-purple-500 rounded"></div>
-            Cor da Categoria (Visual)
+            Cor da Categoria
           </h4>
 
           <div className="grid grid-cols-4 gap-3">
